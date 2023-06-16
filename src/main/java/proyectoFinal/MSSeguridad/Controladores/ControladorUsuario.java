@@ -2,7 +2,9 @@ package proyectoFinal.MSSeguridad.Controladores;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import proyectoFinal.MSSeguridad.Modelos.Rol;
 import proyectoFinal.MSSeguridad.Modelos.Usuario;
+import proyectoFinal.MSSeguridad.Repositorios.RepositorioRol;
 import proyectoFinal.MSSeguridad.Repositorios.RepositorioUsuario;
 
 import java.security.MessageDigest;
@@ -16,6 +18,9 @@ import java.util.List;
 public class ControladorUsuario {
     @Autowired
     private RepositorioUsuario miRepositorioUsuario;
+
+    @Autowired
+    private RepositorioRol miRepositorioRol;
 
 
     @GetMapping("")
@@ -66,6 +71,42 @@ public class ControladorUsuario {
             this.miRepositorioUsuario.delete(usuarioActual);
         }
     }
+
+
+    /**
+     * Relación (1 a n) entre rol y usuario
+     * @param id
+     * @param id_rol
+     * @return
+     * Esta funcion hace la referencia osea es como la simulacion de 1an en base relacionales
+
+     */
+
+    @PutMapping("{id}/rol/{id_rol}")
+    public Usuario asignarRolAUsuario(@PathVariable String id,@PathVariable String id_rol){
+        Usuario usuarioActual=this.miRepositorioUsuario
+                .findById(id)
+                .orElse(null);
+
+        Rol rolActual=this.miRepositorioRol
+                .findById(id_rol)
+                .orElse(null);
+        if (usuarioActual != null && rolActual != null){
+            usuarioActual.setRol(rolActual);
+            return this.miRepositorioUsuario.save(usuarioActual);
+        }else{
+            return null;
+        }
+
+    }
+
+
+
+
+
+
+
+
 
 
 
