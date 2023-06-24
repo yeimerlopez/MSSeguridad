@@ -7,6 +7,8 @@ import proyectoFinal.MSSeguridad.Modelos.Usuario;
 import proyectoFinal.MSSeguridad.Repositorios.RepositorioRol;
 import proyectoFinal.MSSeguridad.Repositorios.RepositorioUsuario;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -99,6 +101,26 @@ public class ControladorUsuario {
         }
 
     }
+
+    //Esta es la funcion que  busca el ApiGateway  cuando se ejecuta Create_token
+    @PostMapping("/validar")
+    public Usuario validar(@RequestBody  Usuario infoUsuario, final HttpServletResponse response) throws IOException {
+        Usuario usuarioActual=this.miRepositorioUsuario
+                .getUserByEmail(infoUsuario.getCorreo());
+        if (usuarioActual!=null &&
+                usuarioActual.getContrasena().equals(convertirSHA256(infoUsuario.getContrasena()))) {
+            usuarioActual.setContrasena("");
+            return usuarioActual;
+
+        }else{
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+    }
+
+
+
+
 
 
 
